@@ -5,15 +5,8 @@ from datetime import datetime
 import time
 
 def fetch_google_news(query, region=""):
-    """
-    Fetches news from Google News RSS for a given query and region.
-    Returns a DataFrame with title, link, published date.
-    """
-    # Construct query: "{query} in {region}" or just "{query} {region}"
     full_query = f"{query} {region}".strip()
     encoded_query = urllib.parse.quote(full_query)
-    
-    # Google News RSS URL for India (en-IN)
     url = f"https://news.google.com/rss/search?q={encoded_query}&hl=en-IN&gl=IN&ceid=IN:en"
     
     print(f"Fetching news for: {full_query}")
@@ -24,19 +17,15 @@ def fetch_google_news(query, region=""):
         return pd.DataFrame()
     
     news_items = []
-    
     if not feed.entries:
         print(f"No entries found for {full_query}")
         return pd.DataFrame()
         
     for entry in feed.entries:
-        # Parse published date
-        # Format usually: 'Fri, 08 Jan 2026 09:30:00 GMT'
-        # We try to parse it to datetime
         try:
             pub_date = pd.to_datetime(entry.published)
         except:
-            pub_date = datetime.now() # Fallback
+            pub_date = datetime.now()
             
         news_items.append({
             'title': entry.title,
@@ -51,23 +40,19 @@ def fetch_google_news(query, region=""):
     return df
 
 def fetch_all_news(regions, queries=['jobs', 'migration', 'industry', 'hiring']):
-    """
-    Fetches news for multiple regions and queries.
-    """
     all_news = []
     for region in regions:
         for q in queries:
             df = fetch_google_news(q, region)
             if not df.empty:
                 all_news.append(df)
-            time.sleep(1) # Be nice to the server
+            time.sleep(1)
             
     if all_news:
         return pd.concat(all_news, ignore_index=True)
     return pd.DataFrame()
 
 if __name__ == "__main__":
-    # Test
     regions = ["Andhra Pradesh", "Telangana"]
     df = fetch_all_news(regions, queries=['jobs'])
     print(f"Fetched {len(df)} articles.")
