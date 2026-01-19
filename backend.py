@@ -94,7 +94,7 @@ def analyze_migration():
         # limit to first few states to avoid browser time outs
         # this is off, to ensure that all states are processed
         # but it causes it to take far longer to run
-        # target_states = states[:5] if len(states) > 5 else states
+        # target_states = states[:3] if len(states) > 3 else states
         
         target_states = states
         
